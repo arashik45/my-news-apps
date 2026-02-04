@@ -1,0 +1,8 @@
+
+{
+  "name": "FactDot - AI Fact-Check Reporter",
+  "description": "A professional tool for creating fact-checking report cards with AI-assisted verification and content generation.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
