@@ -1,17 +1,21 @@
-
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { AICheckResult } from "../types";
 
-const API_KEY = process.env.API_KEY;
+// আপনার API Key সরাসরি এখানে দিবেন না, এটি .env ফাইল বা Vercel থেকে আসবে
+const API_KEY = process.env.GEMINI_API_KEY; 
 
 export class GeminiService {
-  private ai: GoogleGenAI;
+  private genAI: any;
+  private model: any;
 
   constructor() {
     if (!API_KEY) {
-      throw new Error("API_KEY is missing from environment");
+      throw new Error("API_KEY is missing from environment variables");
     }
-    this.ai = new GoogleGenAI({ apiKey: API_KEY });
+    // GoogleGenAI সেটআপ
+    this.genAI = new GoogleGenAI(API_KEY);
+    // মডেল সিলেক্ট করা (gemini-1.5-flash সবচেয়ে ভালো ও দ্রুত কাজ করে)
+    this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   }
 
   async verifyClaim(claim: string, context?: string): Promise<AICheckResult> {
@@ -27,5 +31,20 @@ export class GeminiService {
       3. Categorize it as Verified (সত্য), Fake (ভুয়া), or Misleading (বিভ্রান্তিকর).
     `;
 
-    const response = await this.ai.models.generateContent({
-      model: "
+    try {
+      const result = await this.model.generateContent(prompt);
+      const responseText = result.response.text();
+      
+      // আপনার AICheckResult টাইপ অনুযায়ী রিটার্ন করুন
+      return {
+        result: responseText,
+        status: "success"
+        // আপনার টাইপ অনুযায়ী আরও ডাটা থাকলে এখানে যোগ করুন
+      } as unknown as AICheckResult;
+      
+    } catch (error) {
+      console.error("Gemini Error:", error);
+      throw new Error("Failed to verify claim");
+    }
+  }
+}
