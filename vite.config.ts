@@ -11,8 +11,12 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        // এটি আপনার কোডের process.env এররগুলো হ্যান্ডেল করবে
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY),
+      },
+      build: {
+        // বড় লাইব্রেরির কারণে আসা ওয়ার্নিংটি দূর করতে এটি যোগ করা হলো
+        chunkSizeWarningLimit: 1600,
       },
       resolve: {
         alias: {
